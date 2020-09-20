@@ -28,6 +28,20 @@ export const addMessage = (newMessage) => async (dispatch) => {
         .catch(err => { console.log(err); })
 };
 
+export const deleteMessage = (messageID) => async (dispatch) => {
+    await axios.delete(`${baseUrl}/Rooms/${messageID}`)
+        .then(res => {
+            axios.get(`${baseUrl}/Rooms`)
+                .then(res => {
+                    dispatch({
+                        type: "MESSAGE_LIST",
+                        payload: res.data
+                    })
+                })
+                .catch(err => { console.log(err); })
+        })
+        .catch(err => { console.log(err); })
+};
 
 export const getMessageByID = (id) => async (dispatch) => {
     await axios.get(`${baseUrl}/Rooms/${id}`)
@@ -55,7 +69,7 @@ export const login = (user) => async (dispatch) => {
     await axios.post(`${baseUrl}/Users`,user)
         .then(res => {
             dispatch({
-                type: "REGISTER",
+                type: "LOGIN",
                 payload: res.data
             })
         })

@@ -3,7 +3,7 @@ import React from 'react';
 import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect } from 'react-redux';
-import { getAllMessages, addMessage, getMessageByID } from '../actions';
+import { getAllMessages, addMessage, getMessageByID,deleteMessage } from '../actions';
 import { Button, Modal } from 'react-bootstrap';
 
 
@@ -14,7 +14,8 @@ class Home extends React.Component {
         this.state = {
             value: '',
             show: false,
-            detail:''
+            detail:'',
+            msgID:''
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -28,6 +29,12 @@ class Home extends React.Component {
         this.setState({ show: true });
     }
 
+    handleDelete = (id) => {
+        console.log("idddddddddddddddddddddddd",id)
+       // this.props.getMessageByID(id);
+        this.props.deleteMessage(id)
+        this.setState({ msgID: '' });
+    }
 
     handleChange(event) {
         this.setState({ value: event.target.value });
@@ -46,6 +53,14 @@ class Home extends React.Component {
         this.setState({ value: '' });
         //alert('A name was submitted: ' + this.state.value);
     }
+
+    // handleDelete(event) {
+    //     event.preventDefault();
+    //     var messageID = { _id: this.state.msgID };
+    //     this.props.deleteMessage(this.props.getMessageByID(messageID));
+    //     this.setState({ msgID: '' });
+    // }
+
     renderMessages(messages) {
         if (messages) {
             if (messages.length === 0) {
@@ -59,8 +74,10 @@ class Home extends React.Component {
                             {msg.MessageContent}
                         </div>
                         <li className="list-inline-item">
-                            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><FontAwesomeIcon icon={faTrash}></FontAwesomeIcon></button>
+                            <button className="btn btn-danger btn-sm rounded-0" type="button" title="Delete" 
+                            onClick={() => { this.handleDelete(msg._id) }}><FontAwesomeIcon icon={faTrash}></FontAwesomeIcon></button>
                         </li>
+
                         <li className="list-inline-item">
                             <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip"
                                 data-placement="top" title="Edit" onClick={() => { this.handleShow(msg._id) }}><FontAwesomeIcon icon={faEdit}></FontAwesomeIcon></button>
@@ -79,7 +96,9 @@ class Home extends React.Component {
                                 </div>
                             </form>
                             </div>
+                            <div className="ml-4">
                             {this.renderReplies(msg.Replies)}
+                            </div>
                     </div>
                 </div>
 
@@ -106,7 +125,6 @@ class Home extends React.Component {
                     </Modal.Footer>
                 </Modal>
 
-
             </div>))
         }
     }
@@ -116,16 +134,16 @@ class Home extends React.Component {
             if (replies.length !== 0)
            {     // return <div> there are no replies</div>
             return replies.map((item) => (
-                
                 <div className="container">
                     <div className="row">
                         <div className="col-12 bg-light">
                             <b>  {item.Sender.Username} </b>
                             <div>
-                                {item.ReplyContent}
+                                 {item.ReplyContent}
                             </div>
                             <li className="list-inline-item">
-                                <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><FontAwesomeIcon icon={faTrash}></FontAwesomeIcon></button>
+                            <button className="btn btn-danger btn-sm rounded-0" type="button" title="Delete" 
+                            onClick={() => { this.handleDelete(item._id) }}><FontAwesomeIcon icon={faTrash}></FontAwesomeIcon></button>
                             </li>
                             <li className="list-inline-item">
                                 <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip"
@@ -197,7 +215,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
     getAllMessages,
     addMessage,
-    getMessageByID
+    getMessageByID,
+    deleteMessage
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
